@@ -27,8 +27,6 @@ function CopyMatchedFileToOutputDirectory($oldFilename, $newFilename) {
 }
 
 function CopyUnmatchedFileToOutputDirectory($oldFilename) {
-    Write-Warning "No match found for file $oldFilename"
-
     $fullOldPath = Join-Path -Path $inputDirectory -ChildPath $oldFilename
     $fullNewPath = Join-Path -Path $notFoundDirectory -ChildPath $oldFilename
     
@@ -38,8 +36,16 @@ function CopyUnmatchedFileToOutputDirectory($oldFilename) {
 $files = Get-ChildItem $inputDirectory
 
 $nameLookup = @{}
-Import-Csv $nameLookFile| ForEach-Object {
+Import-Csv $nameLookFile | ForEach-Object {
   $nameLookup[$_.Prefix] = $_.FullName
+    
+    if([string]::IsNullOrEmpty($_.Prefix) -eq $true) {
+        Write-Warning "Empty row found in names CSV file. Verify the file has the headers Prefix and FullName"
+    }
+    
+    if([string]::IsNullOrEmpty($_.FullName) -eq $true) {
+        Write-Warning "Empty row found in names CSV file. Verify the file has the headers Prefix and FullName"
+    }
 }
 
 Write-Host "Found $($files.Count) files in the input directory.";
@@ -48,10 +54,11 @@ for ($i=0; $i -lt $files.Count; $i++) {
     
     $oldFilename = $files[$i];
     
-    $prefix = ($oldFilename -split "_")[0]
+    $prefix = ($oldFilename -split "_")[1]
     $fullName = $nameLookup[$prefix]
 
     if([string]::IsNullOrEmpty($fullName) -eq $true) {
+        Write-Warning "No match found for username '$prefix', filename is '$oldFilename'"
         CopyUnmatchedFileToOutputDirectory($oldFilename);
     }
     else {
