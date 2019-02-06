@@ -5,6 +5,7 @@ $outputDirectory = "OutputFiles";
 $notFoundDirectory = "NoMatchFiles"
 $nameLookFile = "Names.csv"
 $baseOutputDirectory = Get-Date -UFormat "%Y-%m-%d %H-%M-%S"
+$removeDatePart = $true
 
 # Assumes that all files are in the format prefix_filename.pdf
 ## Examples:
@@ -63,6 +64,14 @@ for ($i=0; $i -lt $files.Count; $i++) {
     }
     else {
         $newFilename = $oldFilename -replace $prefix,$fullName
+        
+        $newFilename = $newFilename -replace "Formative Submission_", ""
+        $newFilename = $newFilename -replace "attempt_", "" 
+        
+        if($removeDatePart -eq $true) {
+            $newFilename = $newFilename -replace ($oldFilename -split "_")[3], ""
+        }
+                
         CopyMatchedFileToOutputDirectory $oldFilename.Name  $newFilename
     }
 } 
