@@ -63,7 +63,7 @@ for ($i=0; $i -lt $files.Count; $i++) {
         CopyUnmatchedFileToOutputDirectory($oldFilename);
     }
     else {
-        $newFilename = $oldFilename -replace $prefix,$fullName
+        $newFilename = $oldFilename -replace $prefix,"$($fullName)_$($prefix)"
         
         $newFilename = $newFilename -replace "Formative Submission_", ""
         $newFilename = $newFilename -replace "attempt_", "" 
