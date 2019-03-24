@@ -67,6 +67,9 @@ for ($i=0; $i -lt $files.Count; $i++) {
         
         $newFilename = $newFilename -replace "Formative Submission_", ""
         $newFilename = $newFilename -replace "attempt_", "" 
+        $fileExtension = [System.IO.Path]::GetExtension($newFilename);
+        
+        $newFilename = $newFilename -replace $fileExtension,"someText$fileExtension"
         
         if($removeDatePart -eq $true) {
             $newFilename = $newFilename -replace ($oldFilename -split "_")[3], ""
